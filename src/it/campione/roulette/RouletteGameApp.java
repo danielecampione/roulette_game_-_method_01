@@ -43,7 +43,7 @@ public class RouletteGameApp extends Application {
 
         // ComboBox per il numero di lanci
         numberOfSpinsComboBox = new ComboBox<>();
-        for (int i = 1; i <= 500; i++) {
+        for (int i = 1; i <= 5500; i++) {
             numberOfSpinsComboBox.getItems().add(i);
         }
         numberOfSpinsComboBox.getSelectionModel().select(99); // Imposta 100 come valore predefinito
@@ -109,15 +109,15 @@ public class RouletteGameApp extends Application {
             String parity = getParity(number);
             String range = getRange(number);
             String situation = getSituation(result);
-            String profitLoss = result + "€";
+            String profitLoss = (result >= 0) ? "Guadagno: " + result + "€" : "Perdita: " + Math.abs(result) + "€";
 
             // Crea la riga di output
             String line = getSymbol(result) + " " + number + " | Colore: " + color + " | Parità: " + parity
-                    + " | Range: " + range + " | Situazione: " + situation + " | Guadagno/Perdita: " + profitLoss
-                    + " | Totale: " + totalProfitLoss + "€<br>";
+                    + " | Range: " + range + " | Situazione: " + situation + " | " + profitLoss + " | Totale: "
+                    + totalProfitLoss + "€<br>";
 
             // Aggiungi la riga all'output con il colore appropriato
-            if (totalProfitLoss < 25) {
+            if (totalProfitLoss < 0) { // Modifica qui
                 output.append("<span style='color:red;'>").append(line).append("</span>"); // Rosso
             } else if (sufficientCapital > 0 && totalProfitLoss >= sufficientCapital) {
                 output.append("<span style='color:blue;'>").append(line).append("</span>"); // Blu
