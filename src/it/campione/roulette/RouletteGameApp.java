@@ -11,14 +11,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 public class RouletteGameApp extends Application {
 
-    private TextArea outputTextArea;
+    private WebView outputWebView; // Usiamo WebView per visualizzare HTML
     private TextArea statsTextArea;
     private ComboBox<Integer> attemptLimitComboBox;
-    private ComboBox<Integer> numberOfSpinsComboBox; // Nuova ComboBox per il numero di lanci
+    private ComboBox<Integer> numberOfSpinsComboBox;
     private Random random;
 
     // Numeri neri e prima riga della roulette
@@ -31,10 +32,8 @@ public class RouletteGameApp extends Application {
 
         random = new Random();
 
-        // TextArea per l'output
-        outputTextArea = new TextArea();
-        outputTextArea.setEditable(false);
-        outputTextArea.setWrapText(true);
+        // WebView per l'output (supporta HTML)
+        outputWebView = new WebView();
 
         // TextArea per le statistiche
         statsTextArea = new TextArea();
@@ -44,7 +43,7 @@ public class RouletteGameApp extends Application {
         // ComboBox per il numero di lanci
         numberOfSpinsComboBox = new ComboBox<>();
         for (int i = 1; i <= 500; i++) {
-            numberOfSpinsComboBox.getItems().add(i); // Aggiungi numeri da 1 a 500
+            numberOfSpinsComboBox.getItems().add(i);
         }
         numberOfSpinsComboBox.getSelectionModel().select(99); // Imposta 100 come valore predefinito
 
@@ -63,7 +62,7 @@ public class RouletteGameApp extends Application {
         controlsBox.setPadding(new Insets(10));
 
         BorderPane root = new BorderPane();
-        root.setCenter(outputTextArea);
+        root.setCenter(outputWebView);
         root.setRight(controlsBox);
         root.setBottom(statsTextArea);
 
@@ -73,14 +72,17 @@ public class RouletteGameApp extends Application {
     }
 
     private void startSimulation() {
-        outputTextArea.clear();
+        outputWebView.getEngine().loadContent(""); // Pulisci l'output precedente
         statsTextArea.clear();
 
-        int numberOfSpins = numberOfSpinsComboBox.getValue(); // Ottieni il numero di lanci scelto dall'utente
+        int numberOfSpins = numberOfSpinsComboBox.getValue();
         int attemptLimit = attemptLimitComboBox.getValue();
         int totalProfitLoss = 0;
         StringBuilder output = new StringBuilder();
         StringBuilder stats = new StringBuilder();
+
+        // Apri il contenuto HTML
+        output.append("<html><body style='font-family: Courier New; font-size: 12px;'>");
 
         for (int i = 0; i < numberOfSpins; i++) {
             int number = spinRoulette();
@@ -94,11 +96,17 @@ public class RouletteGameApp extends Application {
             String situation = getSituation(result);
             String profitLoss = result + "€";
 
-            // Aggiungi i dettagli all'output
-            output.append(getSymbol(result)).append(" ").append(number).append(" | Colore: ").append(color)
-                    .append(" | Parità: ").append(parity).append(" | Range: ").append(range).append(" | Situazione: ")
-                    .append(situation).append(" | Guadagno/Perdita: ").append(profitLoss).append(" | Totale: ")
-                    .append(totalProfitLoss).append("€").append("\n");
+            // Crea la riga di output
+            String line = getSymbol(result) + " " + number + " | Colore: " + color + " | Parità: " + parity
+                    + " | Range: " + range + " | Situazione: " + situation + " | Guadagno/Perdita: " + profitLoss
+                    + " | Totale: " + totalProfitLoss + "€<br>";
+
+            // Aggiungi la riga all'output con il colore appropriato
+            if (totalProfitLoss < 25) {
+                output.append("<span style='color:red;'>").append(line).append("</span>"); // Rosso
+            } else {
+                output.append("<span style='color:black;'>").append(line).append("</span>"); // Nero
+            }
 
             if (attemptLimit > 0 && i + 1 >= attemptLimit) {
                 stats.append("Profit/Loss up to attempt ").append(attemptLimit).append(": ").append(totalProfitLoss)
@@ -107,8 +115,11 @@ public class RouletteGameApp extends Application {
             }
         }
 
+        // Chiudi il contenuto HTML
+        output.append("</body></html>");
+
         stats.append("Total Profit/Loss: ").append(totalProfitLoss).append("€\n");
-        outputTextArea.setText(output.toString());
+        outputWebView.getEngine().loadContent(output.toString()); // Carica il contenuto HTML
         statsTextArea.setText(stats.toString());
     }
 
