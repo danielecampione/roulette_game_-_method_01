@@ -2,8 +2,10 @@ package it.campione.roulette;
 
 import java.util.Random;
 
+import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
+import javafx.animation.ParallelTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
@@ -48,6 +50,9 @@ public class RouletteGameApp extends Application {
         statsTextArea.setEditable(false);
         statsTextArea.setWrapText(true);
 
+        // Applica le animazioni all'avvio
+        applyStartupAnimations(statsTextArea);
+
         // ComboBox per il numero di lanci
         numberOfSpinsComboBox = new ComboBox<>();
         for (int i = 1; i <= 5500; i++) {
@@ -61,7 +66,7 @@ public class RouletteGameApp extends Application {
         sufficientCapitalComboBox.getSelectionModel().selectFirst(); // Imposta 0 come valore predefinito
 
         // Pulsante per avviare la simulazione
-        Button startButton = new Button("Start Simulation");
+        Button startButton = new Button("Avvia Simulazione");
         startButton.getStyleClass().add("button"); // Applica lo stile CSS
         startButton.setOnAction(e -> startSimulation());
         applyButtonEffects(startButton); // Applica gli effetti grafici
@@ -83,7 +88,62 @@ public class RouletteGameApp extends Application {
         Scene scene = new Scene(root, 800, 600);
         scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm()); // Carica il file CSS
         primaryStage.setScene(scene);
+
+        // Gestione dell'evento di chiusura
+        primaryStage.setOnCloseRequest(event -> {
+            event.consume(); // Consuma l'evento per gestirlo manualmente
+            applyExitAnimations(primaryStage); // Avvia le animazioni di uscita
+        });
+
         primaryStage.show();
+    }
+
+    private void applyStartupAnimations(TextArea textArea) {
+        // Animazione di fade-in
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), textArea);
+        fadeTransition.setFromValue(0.0); // Trasparente
+        fadeTransition.setToValue(1.0); // Visibile
+
+        // Animazione di scaling
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(1000), textArea);
+        scaleTransition.setFromX(0.8); // Scala iniziale
+        scaleTransition.setFromY(0.8);
+        scaleTransition.setToX(1.0); // Scala finale
+        scaleTransition.setToY(1.0);
+
+        // Animazione di rotazione
+        RotateTransition rotateTransition = new RotateTransition(Duration.millis(1000), textArea);
+        rotateTransition.setByAngle(360); // Ruota di 360 gradi
+
+        // Esegui le animazioni in parallelo
+        ParallelTransition parallelTransition = new ParallelTransition(fadeTransition, scaleTransition,
+                rotateTransition);
+        parallelTransition.play();
+    }
+
+    private void applyExitAnimations(Stage primaryStage) {
+        // Animazione di fade-out
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), primaryStage.getScene().getRoot());
+        fadeTransition.setFromValue(1.0); // Visibile
+        fadeTransition.setToValue(0.0); // Trasparente
+
+        // Animazione di scaling
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(1000), primaryStage.getScene().getRoot());
+        scaleTransition.setFromX(1.0); // Scala iniziale
+        scaleTransition.setFromY(1.0);
+        scaleTransition.setToX(0.5); // Scala finale
+        scaleTransition.setToY(0.5);
+
+        // Animazione di rotazione
+        RotateTransition rotateTransition = new RotateTransition(Duration.millis(1000),
+                primaryStage.getScene().getRoot());
+        rotateTransition.setByAngle(360); // Ruota di 360 gradi
+
+        // Esegui le animazioni in parallelo
+        ParallelTransition parallelTransition = new ParallelTransition(fadeTransition, scaleTransition,
+                rotateTransition);
+        parallelTransition.setOnFinished(e -> primaryStage.close()); // Chiudi l'applicazione alla fine
+        parallelTransition.play();
     }
 
     private void startSimulation() {
@@ -150,7 +210,7 @@ public class RouletteGameApp extends Application {
         stats.append("Massimo guadagno raggiunto: ").append(maxProfit).append("€\n");
         stats.append("Posizione del massimo guadagno: ").append(maxProfitIndex + 1).append("\n"); // +1 per l'indice
                                                                                                   // umano
-        stats.append("Total Profit/Loss: ").append(totalProfitLoss).append("€\n");
+        stats.append("Profitto/Perdita totale: ").append(totalProfitLoss).append("€\n");
 
         // Evidenzia la riga con il massimo guadagno
         String highlightedLine = "<span style='background-color: #F0E68C; font-weight: bold; color: black;'>"
