@@ -18,6 +18,7 @@ public class RouletteGameApp extends Application {
     private TextArea outputTextArea;
     private TextArea statsTextArea;
     private ComboBox<Integer> attemptLimitComboBox;
+    private ComboBox<Integer> numberOfSpinsComboBox; // Nuova ComboBox per il numero di lanci
     private Random random;
 
     // Numeri neri e prima riga della roulette
@@ -40,6 +41,13 @@ public class RouletteGameApp extends Application {
         statsTextArea.setEditable(false);
         statsTextArea.setWrapText(true);
 
+        // ComboBox per il numero di lanci
+        numberOfSpinsComboBox = new ComboBox<>();
+        for (int i = 1; i <= 500; i++) {
+            numberOfSpinsComboBox.getItems().add(i); // Aggiungi numeri da 1 a 500
+        }
+        numberOfSpinsComboBox.getSelectionModel().select(99); // Imposta 100 come valore predefinito
+
         // ComboBox per il limite di tentativi
         attemptLimitComboBox = new ComboBox<>();
         attemptLimitComboBox.getItems().addAll(0, 10, 20, 30, 40, 50, 100);
@@ -50,7 +58,8 @@ public class RouletteGameApp extends Application {
         startButton.setOnAction(e -> startSimulation());
 
         // Layout
-        VBox controlsBox = new VBox(10, new Label("Sum € up to:"), attemptLimitComboBox, startButton);
+        VBox controlsBox = new VBox(10, new Label("Numero di lanci nella serie:"), numberOfSpinsComboBox,
+                new Label("Sum € up to:"), attemptLimitComboBox, startButton);
         controlsBox.setPadding(new Insets(10));
 
         BorderPane root = new BorderPane();
@@ -67,12 +76,13 @@ public class RouletteGameApp extends Application {
         outputTextArea.clear();
         statsTextArea.clear();
 
+        int numberOfSpins = numberOfSpinsComboBox.getValue(); // Ottieni il numero di lanci scelto dall'utente
         int attemptLimit = attemptLimitComboBox.getValue();
         int totalProfitLoss = 0;
         StringBuilder output = new StringBuilder();
         StringBuilder stats = new StringBuilder();
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < numberOfSpins; i++) {
             int number = spinRoulette();
             int result = calculateBetResult(number);
             totalProfitLoss += result;
