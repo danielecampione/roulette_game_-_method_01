@@ -2,8 +2,11 @@ package it.campione.roulette;
 
 import java.util.Random;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
 import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -11,8 +14,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -82,6 +87,9 @@ public class RouletteGameApp extends Application {
     }
 
     private void startSimulation() {
+        // Aggiungi l'effetto neon alle TextArea
+        addNeonEffect(statsTextArea);
+
         outputWebView.getEngine().loadContent(""); // Pulisci l'output precedente
         statsTextArea.clear();
 
@@ -151,6 +159,9 @@ public class RouletteGameApp extends Application {
 
         outputWebView.getEngine().loadContent(finalOutput); // Carica il contenuto HTML con la riga evidenziata
         statsTextArea.setText(stats.toString());
+
+        // Rimuovi l'effetto neon alla fine della simulazione
+        removeNeonEffect(statsTextArea);
     }
 
     private int spinRoulette() {
@@ -270,6 +281,40 @@ public class RouletteGameApp extends Application {
             scaleTransition.setCycleCount(2); // Esegui l'animazione due volte (avanti e indietro)
             scaleTransition.play();
         });
+    }
+
+    private void addNeonEffect(TextArea textArea) {
+        InnerShadow innerShadow = new InnerShadow();
+        innerShadow.setColor(Color.TRANSPARENT); // Inizia con un colore trasparente
+
+        textArea.setEffect(innerShadow);
+
+        // Animazione per far apparire l'effetto neon
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.ZERO, new KeyValue(innerShadow.colorProperty(), Color.TRANSPARENT)),
+                new KeyFrame(Duration.seconds(1), new KeyValue(innerShadow.colorProperty(), Color.BLUE)) // Colore neon
+        );
+        timeline.play();
+    }
+
+    private void removeNeonEffect(TextArea textArea) {
+        InnerShadow innerShadow = (InnerShadow) textArea.getEffect();
+
+        if (innerShadow == null) {
+            innerShadow = new InnerShadow();
+            innerShadow.setColor(Color.BLUE); // Imposta il colore iniziale
+            textArea.setEffect(innerShadow);
+        }
+
+        // Animazione per far scomparire l'effetto neon
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.ZERO, new KeyValue(innerShadow.colorProperty(), Color.BLUE)),
+                new KeyFrame(Duration.seconds(1), new KeyValue(innerShadow.colorProperty(), Color.TRANSPARENT)));
+        timeline.setOnFinished(e -> {
+            textArea.setEffect(null); // Rimuovi l'effetto
+            textArea.setStyle(""); // Ripristina lo stile originale
+        });
+        timeline.play();
     }
 
     public static void main(String[] args) {
