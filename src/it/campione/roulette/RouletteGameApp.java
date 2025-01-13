@@ -87,7 +87,8 @@ public class RouletteGameApp extends Application {
             // Aggiungi i dettagli all'output
             output.append(getSymbol(result)).append(" ").append(number).append(" | Colore: ").append(color)
                     .append(" | Parità: ").append(parity).append(" | Range: ").append(range).append(" | Situazione: ")
-                    .append(situation).append(" | Guadagno/Perdita: ").append(profitLoss).append("\n");
+                    .append(situation).append(" | Guadagno/Perdita: ").append(profitLoss).append(" | Totale: ")
+                    .append(totalProfitLoss).append("€").append("\n");
 
             if (attemptLimit > 0 && i + 1 >= attemptLimit) {
                 stats.append("Profit/Loss up to attempt ").append(attemptLimit).append(": ").append(totalProfitLoss)
