@@ -85,8 +85,9 @@ public class RouletteGameApp extends Application {
 
         int numberOfSpins = numberOfSpinsComboBox.getValue();
         int attemptLimit = attemptLimitComboBox.getValue();
-        int sufficientCapital = sufficientCapitalComboBox.getValue(); // Ottieni il capitale minimo di vittoria
+        int sufficientCapital = sufficientCapitalComboBox.getValue();
         int totalProfitLoss = 0;
+        int maxProfit = Integer.MIN_VALUE; // Variabile per il massimo guadagno
         StringBuilder output = new StringBuilder();
         StringBuilder stats = new StringBuilder();
 
@@ -97,6 +98,11 @@ public class RouletteGameApp extends Application {
             int number = spinRoulette();
             int result = calculateBetResult(number);
             totalProfitLoss += result;
+
+            // Aggiorna il massimo guadagno
+            if (totalProfitLoss > maxProfit) {
+                maxProfit = totalProfitLoss;
+            }
 
             // Dettagli del tiro
             String color = getColor(number);
@@ -129,7 +135,10 @@ public class RouletteGameApp extends Application {
         // Chiudi il contenuto HTML
         output.append("</body></html>");
 
+        // Aggiungi il massimo guadagno alle statistiche
+        stats.append("Massimo guadagno raggiunto: ").append(maxProfit).append("€\n");
         stats.append("Total Profit/Loss: ").append(totalProfitLoss).append("€\n");
+
         outputWebView.getEngine().loadContent(output.toString()); // Carica il contenuto HTML
         statsTextArea.setText(stats.toString());
     }
