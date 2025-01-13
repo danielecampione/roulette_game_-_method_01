@@ -2,6 +2,8 @@ package it.campione.roulette;
 
 import java.util.Random;
 
+import javafx.animation.RotateTransition;
+import javafx.animation.ScaleTransition;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -13,6 +15,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class RouletteGameApp extends Application {
 
@@ -54,7 +57,9 @@ public class RouletteGameApp extends Application {
 
         // Pulsante per avviare la simulazione
         Button startButton = new Button("Start Simulation");
+        startButton.getStyleClass().add("button"); // Applica lo stile CSS
         startButton.setOnAction(e -> startSimulation());
+        applyButtonEffects(startButton); // Applica gli effetti grafici
 
         // Layout
         VBox controlsBox = new VBox(10, new Label("Numero di lanci nella serie:"), numberOfSpinsComboBox,
@@ -67,6 +72,7 @@ public class RouletteGameApp extends Application {
         root.setBottom(statsTextArea);
 
         Scene scene = new Scene(root, 800, 600);
+        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm()); // Carica il file CSS
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -221,6 +227,32 @@ public class RouletteGameApp extends Application {
             }
         }
         return false;
+    }
+
+    private void applyButtonEffects(Button button) {
+        button.setOnMouseEntered(e -> {
+            button.setStyle(
+                    "-fx-background-color: #45a049; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 10, 0, 0, 5); -fx-cursor: hand;");
+            ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(200), button);
+            scaleTransition.setToX(1.1);
+            scaleTransition.setToY(1.1);
+            scaleTransition.play();
+        });
+        button.setOnMouseExited(e -> {
+            button.setStyle(
+                    "-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-background-radius: 5px; -fx-padding: 10 20; -fx-font-size: 14px;");
+            ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(200), button);
+            scaleTransition.setToX(1.0);
+            scaleTransition.setToY(1.0);
+            scaleTransition.play();
+        });
+        button.setOnMousePressed(e -> {
+            RotateTransition rotateTransition = new RotateTransition(Duration.millis(100), button);
+            rotateTransition.setByAngle(5);
+            rotateTransition.setCycleCount(2);
+            rotateTransition.setAutoReverse(true);
+            rotateTransition.play();
+        });
     }
 
     public static void main(String[] args) {
