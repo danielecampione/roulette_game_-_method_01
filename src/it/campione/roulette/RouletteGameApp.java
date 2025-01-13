@@ -66,6 +66,10 @@ public class RouletteGameApp extends Application {
                 new Label("Capitale minimo di vittoria:"), sufficientCapitalComboBox, startButton);
         controlsBox.setPadding(new Insets(10));
 
+        // Applica l'animazione alle ComboBox
+        applyComboBoxAnimation(numberOfSpinsComboBox);
+        applyComboBoxAnimation(sufficientCapitalComboBox);
+
         BorderPane root = new BorderPane();
         root.setCenter(outputWebView);
         root.setRight(controlsBox);
@@ -252,6 +256,19 @@ public class RouletteGameApp extends Application {
             rotateTransition.setCycleCount(2);
             rotateTransition.setAutoReverse(true);
             rotateTransition.play();
+        });
+    }
+
+    private void applyComboBoxAnimation(ComboBox<?> comboBox) {
+        comboBox.setOnAction(e -> {
+            ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(200), comboBox);
+            scaleTransition.setFromX(1.0);
+            scaleTransition.setFromY(1.0);
+            scaleTransition.setToX(1.1); // Ingrandisce del 10%
+            scaleTransition.setToY(1.1); // Ingrandisce del 10%
+            scaleTransition.setAutoReverse(true); // Torna alla dimensione originale
+            scaleTransition.setCycleCount(2); // Esegui l'animazione due volte (avanti e indietro)
+            scaleTransition.play();
         });
     }
 
