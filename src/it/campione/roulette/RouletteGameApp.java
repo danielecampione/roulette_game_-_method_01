@@ -18,7 +18,6 @@ public class RouletteGameApp extends Application {
 
     private WebView outputWebView;
     private TextArea statsTextArea;
-    private ComboBox<Integer> attemptLimitComboBox;
     private ComboBox<Integer> numberOfSpinsComboBox;
     private ComboBox<Integer> sufficientCapitalComboBox; // ComboBox per il capitale minimo di vittoria
     private Random random;
@@ -48,11 +47,6 @@ public class RouletteGameApp extends Application {
         }
         numberOfSpinsComboBox.getSelectionModel().select(99); // Imposta 100 come valore predefinito
 
-        // ComboBox per il limite di tentativi
-        attemptLimitComboBox = new ComboBox<>();
-        attemptLimitComboBox.getItems().addAll(0, 10, 20, 30, 40, 50, 100);
-        attemptLimitComboBox.getSelectionModel().selectFirst();
-
         // ComboBox per il capitale minimo di vittoria
         sufficientCapitalComboBox = new ComboBox<>();
         sufficientCapitalComboBox.getItems().addAll(0, 25, 50, 60, 75, 90, 100, 150, 200); // Valori di esempio
@@ -64,9 +58,7 @@ public class RouletteGameApp extends Application {
 
         // Layout
         VBox controlsBox = new VBox(10, new Label("Numero di lanci nella serie:"), numberOfSpinsComboBox,
-                new Label("Sum € up to:"), attemptLimitComboBox, new Label("Capitale minimo di vittoria:"),
-                sufficientCapitalComboBox, // Nuova ComboBox
-                startButton);
+                new Label("Capitale minimo di vittoria:"), sufficientCapitalComboBox, startButton);
         controlsBox.setPadding(new Insets(10));
 
         BorderPane root = new BorderPane();
@@ -84,12 +76,13 @@ public class RouletteGameApp extends Application {
         statsTextArea.clear();
 
         int numberOfSpins = numberOfSpinsComboBox.getValue();
-        int attemptLimit = attemptLimitComboBox.getValue();
         int sufficientCapital = sufficientCapitalComboBox.getValue();
         int totalProfitLoss = 0;
         int maxProfit = Integer.MIN_VALUE; // Variabile per il massimo guadagno
         StringBuilder output = new StringBuilder();
         StringBuilder stats = new StringBuilder();
+        String maxProfitLine = ""; // Memorizza la riga con il massimo guadagno
+        int maxProfitIndex = -1; // Memorizza l'indice della riga con il massimo guadagno
 
         // Apri il contenuto HTML
         output.append("<html><body style='font-family: Courier New; font-size: 12px;'>");
@@ -102,6 +95,7 @@ public class RouletteGameApp extends Application {
             // Aggiorna il massimo guadagno
             if (totalProfitLoss > maxProfit) {
                 maxProfit = totalProfitLoss;
+                maxProfitIndex = i; // Memorizza l'indice della riga con il massimo guadagno
             }
 
             // Dettagli del tiro
@@ -116,19 +110,18 @@ public class RouletteGameApp extends Application {
                     + " | Range: " + range + " | Situazione: " + situation + " | " + profitLoss + " | Totale: "
                     + totalProfitLoss + "€<br>";
 
+            // Memorizza la riga con il massimo guadagno
+            if (totalProfitLoss == maxProfit) {
+                maxProfitLine = line;
+            }
+
             // Aggiungi la riga all'output con il colore appropriato
-            if (totalProfitLoss < 0) { // Modifica qui
+            if (totalProfitLoss < 0) {
                 output.append("<span style='color:red;'>").append(line).append("</span>"); // Rosso
             } else if (sufficientCapital > 0 && totalProfitLoss >= sufficientCapital) {
                 output.append("<span style='color:blue;'>").append(line).append("</span>"); // Blu
             } else {
                 output.append("<span style='color:black;'>").append(line).append("</span>"); // Nero
-            }
-
-            if (attemptLimit > 0 && i + 1 >= attemptLimit) {
-                stats.append("Profit/Loss up to attempt ").append(attemptLimit).append(": ").append(totalProfitLoss)
-                        .append("€\n");
-                break;
             }
         }
 
@@ -137,9 +130,16 @@ public class RouletteGameApp extends Application {
 
         // Aggiungi il massimo guadagno alle statistiche
         stats.append("Massimo guadagno raggiunto: ").append(maxProfit).append("€\n");
+        stats.append("Posizione del massimo guadagno: ").append(maxProfitIndex + 1).append("\n"); // +1 per l'indice
+                                                                                                  // umano
         stats.append("Total Profit/Loss: ").append(totalProfitLoss).append("€\n");
 
-        outputWebView.getEngine().loadContent(output.toString()); // Carica il contenuto HTML
+        // Evidenzia la riga con il massimo guadagno
+        String highlightedLine = "<span style='background-color: #F0E68C; font-weight: bold; color: black;'>"
+                + maxProfitLine + "</span>";
+        String finalOutput = output.toString().replace(maxProfitLine, highlightedLine);
+
+        outputWebView.getEngine().loadContent(finalOutput); // Carica il contenuto HTML con la riga evidenziata
         statsTextArea.setText(stats.toString());
     }
 
