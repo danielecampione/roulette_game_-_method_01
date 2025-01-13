@@ -26,7 +26,7 @@ public class RouletteGameApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Roulette Simulation - Black and First Row Bet");
+        primaryStage.setTitle("Roulette Game - Black and First Row Bet");
 
         random = new Random();
 
@@ -75,10 +75,19 @@ public class RouletteGameApp extends Application {
         for (int i = 0; i < 100; i++) {
             int number = spinRoulette();
             int result = calculateBetResult(number);
-
             totalProfitLoss += result;
 
-            output.append(getSymbol(result)).append(" ").append(number).append("\n");
+            // Dettagli del tiro
+            String color = getColor(number);
+            String parity = getParity(number);
+            String range = getRange(number);
+            String situation = getSituation(result);
+            String profitLoss = result + "€";
+
+            // Aggiungi i dettagli all'output
+            output.append(getSymbol(result)).append(" ").append(number).append(" | Colore: ").append(color)
+                    .append(" | Parità: ").append(parity).append(" | Range: ").append(range).append(" | Situazione: ")
+                    .append(situation).append(" | Guadagno/Perdita: ").append(profitLoss).append("\n");
 
             if (attemptLimit > 0 && i + 1 >= attemptLimit) {
                 stats.append("Profit/Loss up to attempt ").append(attemptLimit).append(": ").append(totalProfitLoss)
@@ -118,6 +127,48 @@ public class RouletteGameApp extends Application {
             return "."; // Vittoria parziale
         } else {
             return "X"; // Sconfitta
+        }
+    }
+
+    private String getColor(int number) {
+        if (number == 0) {
+            return "Verde";
+        } else if (contains(BLACK_NUMBERS, number)) {
+            return "Nero";
+        } else {
+            return "Rosso";
+        }
+    }
+
+    private String getParity(int number) {
+        if (number == 0) {
+            return "N/A";
+        } else if (number % 2 == 0) {
+            return "Pari";
+        } else {
+            return "Dispari";
+        }
+    }
+
+    private String getRange(int number) {
+        if (number == 0) {
+            return "N/A";
+        } else if (number >= 1 && number <= 18) {
+            return "Basso";
+        } else {
+            return "Alto";
+        }
+    }
+
+    private String getSituation(int result) {
+        if (result == 35) {
+            return "Vittoria totale";
+        } else if (result == 5) {
+            return "Vittoria parziale (colore nero)";
+        } else if (result == 15) {
+            return "Vittoria parziale (prima riga)";
+        } else {
+            return "Perdita totale";
         }
     }
 
