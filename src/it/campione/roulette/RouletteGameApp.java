@@ -16,10 +16,11 @@ import javafx.stage.Stage;
 
 public class RouletteGameApp extends Application {
 
-    private WebView outputWebView; // Usiamo WebView per visualizzare HTML
+    private WebView outputWebView;
     private TextArea statsTextArea;
     private ComboBox<Integer> attemptLimitComboBox;
     private ComboBox<Integer> numberOfSpinsComboBox;
+    private ComboBox<Integer> sufficientCapitalComboBox; // ComboBox per il capitale minimo di vittoria
     private Random random;
 
     // Numeri neri e prima riga della roulette
@@ -52,13 +53,20 @@ public class RouletteGameApp extends Application {
         attemptLimitComboBox.getItems().addAll(0, 10, 20, 30, 40, 50, 100);
         attemptLimitComboBox.getSelectionModel().selectFirst();
 
+        // ComboBox per il capitale minimo di vittoria
+        sufficientCapitalComboBox = new ComboBox<>();
+        sufficientCapitalComboBox.getItems().addAll(0, 25, 50, 60, 75, 90, 100, 150, 200); // Valori di esempio
+        sufficientCapitalComboBox.getSelectionModel().selectFirst(); // Imposta 0 come valore predefinito
+
         // Pulsante per avviare la simulazione
         Button startButton = new Button("Start Simulation");
         startButton.setOnAction(e -> startSimulation());
 
         // Layout
         VBox controlsBox = new VBox(10, new Label("Numero di lanci nella serie:"), numberOfSpinsComboBox,
-                new Label("Sum € up to:"), attemptLimitComboBox, startButton);
+                new Label("Sum € up to:"), attemptLimitComboBox, new Label("Capitale minimo di vittoria:"),
+                sufficientCapitalComboBox, // Nuova ComboBox
+                startButton);
         controlsBox.setPadding(new Insets(10));
 
         BorderPane root = new BorderPane();
@@ -77,6 +85,7 @@ public class RouletteGameApp extends Application {
 
         int numberOfSpins = numberOfSpinsComboBox.getValue();
         int attemptLimit = attemptLimitComboBox.getValue();
+        int sufficientCapital = sufficientCapitalComboBox.getValue(); // Ottieni il capitale minimo di vittoria
         int totalProfitLoss = 0;
         StringBuilder output = new StringBuilder();
         StringBuilder stats = new StringBuilder();
@@ -104,6 +113,8 @@ public class RouletteGameApp extends Application {
             // Aggiungi la riga all'output con il colore appropriato
             if (totalProfitLoss < 25) {
                 output.append("<span style='color:red;'>").append(line).append("</span>"); // Rosso
+            } else if (sufficientCapital > 0 && totalProfitLoss >= sufficientCapital) {
+                output.append("<span style='color:blue;'>").append(line).append("</span>"); // Blu
             } else {
                 output.append("<span style='color:black;'>").append(line).append("</span>"); // Nero
             }
