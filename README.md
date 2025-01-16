@@ -17,4 +17,11 @@ The method uses the **rectangular view of the roulette table**.
 
 ---
 
-For more details, watch the video: [YouTube Link](https://www.youtube.com/watch?v=Pe1TskP2Awo)
+## Video Explanation
+
+For a more detailed explanation, you can watch the following video:  
+[![Video Explanation](https://img.youtube.com/vi/Pe1TskP2Awo/0.jpg)](https://www.youtube.com/watch?v=Pe1TskP2Awo)
+
+---
+
+Feel free to explore and adapt these strategies for your own use. Good luck!

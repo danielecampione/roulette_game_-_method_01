@@ -1,7 +1,5 @@
 package it.campione.roulette;
 
-import java.util.Random;
-
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -26,11 +24,11 @@ import javafx.util.Duration;
 
 public class RouletteGameApp extends Application {
 
+    Roulette roulette;
     private WebView outputWebView;
     private TextArea statsTextArea;
     private ComboBox<Integer> numberOfSpinsComboBox;
     private ComboBox<Integer> sufficientCapitalComboBox; // ComboBox per il capitale minimo di vittoria
-    private Random random;
 
     // Numeri neri e prima riga della roulette
     private static final int[] BLACK_NUMBERS = { 2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35 };
@@ -40,7 +38,7 @@ public class RouletteGameApp extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Roulette Game - Black and First Row Bet");
 
-        random = new Random();
+        roulette = new Roulette();
 
         // WebView per l'output (supporta HTML)
         outputWebView = new WebView();
@@ -166,7 +164,7 @@ public class RouletteGameApp extends Application {
         output.append("<html><body style='font-family: Courier New; font-size: 12px;'>");
 
         for (int i = 0; i < numberOfSpins; i++) {
-            int number = spinRoulette();
+            int number = roulette.spin();
             int result = calculateBetResult(number);
             totalProfitLoss += result;
 
@@ -222,10 +220,6 @@ public class RouletteGameApp extends Application {
 
         // Rimuovi l'effetto neon alla fine della simulazione
         removeNeonEffect(statsTextArea);
-    }
-
-    private int spinRoulette() {
-        return random.nextInt(37); // Numeri da 0 a 36
     }
 
     private int calculateBetResult(int number) {
