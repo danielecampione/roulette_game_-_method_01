@@ -22,15 +22,45 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+/**
+ * Explanation of "Method 01"
+ * Method 01 is a roulette strategy discovered by watching a YouTube video.
+ * The method uses the rectangular view of the roulette table.
+ *
+ * How It Works
+ * You bet EUR 15 on black, so that if you win, you get double the amount bet
+ * (x2).
+ * Simultaneously, you bet EUR 10 on the final square of the top row (using the
+ * rectangular view of the roulette table), which corresponds to the row
+ * containing the numbers 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36.
+ * This is because there are only four black numbers in the first row, and the
+ * strategy aims to exploit this anomaly.
+ * Note: You are not betting EUR 10 on each number in the first row, but only on
+ * the final square of the first row, so that if you win, you get **three times
+ * the amount bet (x3) **.
+ * At the same time, you do not bet anything on the number 0.
+ * Key Points
+ * The method is relatively safe but not 100% reliable, as evidenced by the fact
+ * that the 0 is always uncovered.
+ * This strategy is useful when you are already at a loss and want to try to
+ * recover at least some of your losses, as it has proven effective in helping
+ * to bounce back from critical situations.
+ * Video Explanation
+ * For a more detailed explanation, you can watch the following video:
+ * https://www.youtube.com/watch?v=Pe1TskP2Awo
+ * Feel free to explore and adapt these strategies for your own use. Good luck!
+ * 
+ * @author D. Campione
+ */
 public class RouletteGameApp extends Application {
 
     Roulette roulette;
     private WebView outputWebView;
     private TextArea statsTextArea;
     private ComboBox<Integer> numberOfSpinsComboBox;
-    private ComboBox<Integer> sufficientCapitalComboBox; // ComboBox per il capitale minimo di vittoria
+    private ComboBox<Integer> sufficientCapitalComboBox; // ComboBox for the minimum win capital
 
-    // Numeri neri e prima riga della roulette
+    // Black numbers and first row of roulette
     private static final int[] BLACK_NUMBERS = { 2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35 };
     private static final int[] FIRST_ROW = { 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36 };
 
@@ -40,41 +70,41 @@ public class RouletteGameApp extends Application {
 
         roulette = new Roulette();
 
-        // WebView per l'output (supporta HTML)
+        // WebView for output (supports HTML)
         outputWebView = new WebView();
 
-        // TextArea per le statistiche
+        // TextArea for statistics
         statsTextArea = new TextArea();
         statsTextArea.setEditable(false);
         statsTextArea.setWrapText(true);
 
-        // Applica le animazioni all'avvio
+        // Apply animations on startup
         applyStartupAnimations(statsTextArea);
 
-        // ComboBox per il numero di lanci
+        // ComboBox for the number of launches
         numberOfSpinsComboBox = new ComboBox<>();
         for (int i = 1; i <= 5500; i++) {
             numberOfSpinsComboBox.getItems().add(i);
         }
         numberOfSpinsComboBox.getSelectionModel().select(99); // Imposta 100 come valore predefinito
 
-        // ComboBox per il capitale minimo di vittoria
+        // ComboBox for the minimum win capital
         sufficientCapitalComboBox = new ComboBox<>();
         sufficientCapitalComboBox.getItems().addAll(0, 25, 50, 60, 75, 90, 100, 150, 200); // Valori di esempio
-        sufficientCapitalComboBox.getSelectionModel().selectFirst(); // Imposta 0 come valore predefinito
+        sufficientCapitalComboBox.getSelectionModel().selectFirst(); //  Set 0 as the default value
 
-        // Pulsante per avviare la simulazione
+        // Button to start simulation
         Button startButton = new Button("Avvia Simulazione");
-        startButton.getStyleClass().add("button"); // Applica lo stile CSS
+        startButton.getStyleClass().add("button"); // Apply CSS styling
         startButton.setOnAction(e -> startSimulation());
-        applyButtonEffects(startButton); // Applica gli effetti grafici
+        applyButtonEffects(startButton); // Apply Graphic Effects
 
         // Layout
         VBox controlsBox = new VBox(10, new Label("Numero di lanci nella serie:"), numberOfSpinsComboBox,
                 new Label("Capitale minimo di vittoria:"), sufficientCapitalComboBox, startButton);
         controlsBox.setPadding(new Insets(10));
 
-        // Applica l'animazione alle ComboBox
+        // Apply animation to ComboBoxes
         applyComboBoxAnimation(numberOfSpinsComboBox);
         applyComboBoxAnimation(sufficientCapitalComboBox);
 
@@ -87,80 +117,80 @@ public class RouletteGameApp extends Application {
         scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm()); // Carica il file CSS
         primaryStage.setScene(scene);
 
-        // Gestione dell'evento di chiusura
+        // Closing event management
         primaryStage.setOnCloseRequest(event -> {
-            event.consume(); // Consuma l'evento per gestirlo manualmente
-            applyExitAnimations(primaryStage); // Avvia le animazioni di uscita
+            event.consume(); // Consume the event to handle it manually
+            applyExitAnimations(primaryStage); // Start exit animations
         });
 
         primaryStage.show();
     }
 
     private void applyStartupAnimations(TextArea textArea) {
-        // Animazione di fade-in
+        // Fade-in animation
         FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), textArea);
-        fadeTransition.setFromValue(0.0); // Trasparente
-        fadeTransition.setToValue(1.0); // Visibile
+        fadeTransition.setFromValue(0.0); // Transparent
+        fadeTransition.setToValue(1.0); // Visible
 
-        // Animazione di scaling
+        // Scaling animation
         ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(1000), textArea);
-        scaleTransition.setFromX(0.8); // Scala iniziale
+        scaleTransition.setFromX(0.8); // Initial scale
         scaleTransition.setFromY(0.8);
-        scaleTransition.setToX(1.0); // Scala finale
+        scaleTransition.setToX(1.0); // Final scale
         scaleTransition.setToY(1.0);
 
-        // Animazione di rotazione
+        // Spin animation
         RotateTransition rotateTransition = new RotateTransition(Duration.millis(1000), textArea);
-        rotateTransition.setByAngle(360); // Ruota di 360 gradi
+        rotateTransition.setByAngle(360); // Rotate 360 degrees
 
-        // Esegui le animazioni in parallelo
+        // Run animations in parallel
         ParallelTransition parallelTransition = new ParallelTransition(fadeTransition, scaleTransition,
                 rotateTransition);
         parallelTransition.play();
     }
 
     private void applyExitAnimations(Stage primaryStage) {
-        // Animazione di fade-out
+        // Fade-out animation
         FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), primaryStage.getScene().getRoot());
-        fadeTransition.setFromValue(1.0); // Visibile
-        fadeTransition.setToValue(0.0); // Trasparente
+        fadeTransition.setFromValue(1.0); // Visible
+        fadeTransition.setToValue(0.0); // Transparent
 
-        // Animazione di scaling
+        // Scaling animation
         ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(1000), primaryStage.getScene().getRoot());
-        scaleTransition.setFromX(1.0); // Scala iniziale
+        scaleTransition.setFromX(1.0); // Initial scale
         scaleTransition.setFromY(1.0);
-        scaleTransition.setToX(0.5); // Scala finale
+        scaleTransition.setToX(0.5); // Final scale
         scaleTransition.setToY(0.5);
 
-        // Animazione di rotazione
+        // Spin animation
         RotateTransition rotateTransition = new RotateTransition(Duration.millis(1000),
                 primaryStage.getScene().getRoot());
-        rotateTransition.setByAngle(360); // Ruota di 360 gradi
+        rotateTransition.setByAngle(360); // Rotate 360 degrees
 
-        // Esegui le animazioni in parallelo
+        // Run animations in parallel
         ParallelTransition parallelTransition = new ParallelTransition(fadeTransition, scaleTransition,
                 rotateTransition);
-        parallelTransition.setOnFinished(e -> primaryStage.close()); // Chiudi l'applicazione alla fine
+        parallelTransition.setOnFinished(e -> primaryStage.close()); // Close the application at the end
         parallelTransition.play();
     }
 
     private void startSimulation() {
-        // Aggiungi l'effetto neon alle TextArea
+        // Add neon effect to TextArea
         addNeonEffect(statsTextArea);
 
-        outputWebView.getEngine().loadContent(""); // Pulisci l'output precedente
+        outputWebView.getEngine().loadContent(""); // Clean up the previous output
         statsTextArea.clear();
 
         int numberOfSpins = numberOfSpinsComboBox.getValue();
         int sufficientCapital = sufficientCapitalComboBox.getValue();
         int totalProfitLoss = 0;
-        int maxProfit = Integer.MIN_VALUE; // Variabile per il massimo guadagno
+        int maxProfit = Integer.MIN_VALUE; // Variable for maximum gain
         StringBuilder output = new StringBuilder();
         StringBuilder stats = new StringBuilder();
-        String maxProfitLine = ""; // Memorizza la riga con il massimo guadagno
-        int maxProfitIndex = -1; // Memorizza l'indice della riga con il massimo guadagno
+        String maxProfitLine = ""; // Store the row with the highest gain
+        int maxProfitIndex = -1; // Stores the index of the row with the highest gain
 
-        // Apri il contenuto HTML
+        // Open HTML content
         output.append("<html><body style='font-family: Courier New; font-size: 12px;'>");
 
         for (int i = 0; i < numberOfSpins; i++) {
@@ -168,57 +198,56 @@ public class RouletteGameApp extends Application {
             int result = calculateBetResult(number);
             totalProfitLoss += result;
 
-            // Aggiorna il massimo guadagno
+            // Upgrade Maximum Gain
             if (totalProfitLoss > maxProfit) {
                 maxProfit = totalProfitLoss;
-                maxProfitIndex = i; // Memorizza l'indice della riga con il massimo guadagno
+                maxProfitIndex = i; // Stores the index of the row with the highest gain
             }
 
-            // Dettagli del tiro
+            // Shot details
             String color = getColor(number);
             String parity = getParity(number);
             String range = getRange(number);
             String situation = getSituation(result);
             String profitLoss = (result >= 0) ? "Guadagno: " + result + "€" : "Perdita: " + Math.abs(result) + "€";
 
-            // Crea la riga di output
+            //  Create the output row
             String line = getSymbol(result) + " " + number + " | Colore: " + color + " | Parità: " + parity
                     + " | Range: " + range + " | Situazione: " + situation + " | " + profitLoss + " | Totale: "
                     + totalProfitLoss + "€<br>";
 
-            // Memorizza la riga con il massimo guadagno
+            // Store the row with the highest gain
             if (totalProfitLoss == maxProfit) {
                 maxProfitLine = line;
             }
 
-            // Aggiungi la riga all'output con il colore appropriato
+            // Add the line to the output with the appropriate color
             if (totalProfitLoss < 0) {
-                output.append("<span style='color:red;'>").append(line).append("</span>"); // Rosso
+                output.append("<span style='color:red;'>").append(line).append("</span>"); // Red
             } else if (sufficientCapital > 0 && totalProfitLoss >= sufficientCapital) {
-                output.append("<span style='color:blue;'>").append(line).append("</span>"); // Blu
+                output.append("<span style='color:blue;'>").append(line).append("</span>"); // Blue
             } else {
-                output.append("<span style='color:black;'>").append(line).append("</span>"); // Nero
+                output.append("<span style='color:black;'>").append(line).append("</span>"); // Black
             }
         }
 
-        // Chiudi il contenuto HTML
+        // Close HTML Content
         output.append("</body></html>");
 
-        // Aggiungi il massimo guadagno alle statistiche
+        // Add maximum gain to stats
         stats.append("Massimo guadagno raggiunto: ").append(maxProfit).append("€\n");
-        stats.append("Posizione del massimo guadagno: ").append(maxProfitIndex + 1).append("\n"); // +1 per l'indice
-                                                                                                  // umano
+        stats.append("Posizione del massimo guadagno: ").append(maxProfitIndex + 1).append("\n"); // +1 Human Index
         stats.append("Profitto/Perdita totale: ").append(totalProfitLoss).append("€\n");
 
-        // Evidenzia la riga con il massimo guadagno
+        //  Highlight the row with the highest gain
         String highlightedLine = "<span style='background-color: #F0E68C; font-weight: bold; color: black;'>"
                 + maxProfitLine + "</span>";
         String finalOutput = output.toString().replace(maxProfitLine, highlightedLine);
 
-        outputWebView.getEngine().loadContent(finalOutput); // Carica il contenuto HTML con la riga evidenziata
+        outputWebView.getEngine().loadContent(finalOutput); // Load HTML content with the highlighted line
         statsTextArea.setText(stats.toString());
 
-        // Rimuovi l'effetto neon alla fine della simulazione
+        // Remove the neon effect at the end of the simulation
         removeNeonEffect(statsTextArea);
     }
 
@@ -227,23 +256,23 @@ public class RouletteGameApp extends Application {
         boolean isFirstRow = contains(FIRST_ROW, number);
 
         if (isBlack && isFirstRow) {
-            return 35; // Vinci tutto
+            return 35; // Win all
         } else if (isBlack) {
-            return 5; // Vinci in parte (colore nero)
+            return 5; // Win in part (black color)
         } else if (isFirstRow) {
-            return 15; // Vinci in parte (prima riga)
+            return 15; // Win in part (first row)
         } else {
-            return -25; // Perdi tutto
+            return -25; // Lose it all
         }
     }
 
     private String getSymbol(int result) {
         if (result == 35) {
-            return "."; // Vittoria completa
+            return "."; // Complete victory
         } else if (result == 5 || result == 15) {
-            return "."; // Vittoria parziale
+            return "."; // Partial win
         } else {
-            return "X"; // Sconfitta
+            return "X"; // Defeat
         }
     }
 
@@ -329,24 +358,24 @@ public class RouletteGameApp extends Application {
             ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(200), comboBox);
             scaleTransition.setFromX(1.0);
             scaleTransition.setFromY(1.0);
-            scaleTransition.setToX(1.1); // Ingrandisce del 10%
-            scaleTransition.setToY(1.1); // Ingrandisce del 10%
-            scaleTransition.setAutoReverse(true); // Torna alla dimensione originale
-            scaleTransition.setCycleCount(2); // Esegui l'animazione due volte (avanti e indietro)
+            scaleTransition.setToX(1.1); // Enlarges by 10%
+            scaleTransition.setToY(1.1); // Enlarges by 10%
+            scaleTransition.setAutoReverse(true); // Back to original size
+            scaleTransition.setCycleCount(2); // Run the animation twice (forward and backward)
             scaleTransition.play();
         });
     }
 
     private void addNeonEffect(TextArea textArea) {
         InnerShadow innerShadow = new InnerShadow();
-        innerShadow.setColor(Color.TRANSPARENT); // Inizia con un colore trasparente
+        innerShadow.setColor(Color.TRANSPARENT); // Start with a transparent color
 
         textArea.setEffect(innerShadow);
 
-        // Animazione per far apparire l'effetto neon
+        // Animation to make the neon effect appear
         Timeline timeline = new Timeline(
                 new KeyFrame(Duration.ZERO, new KeyValue(innerShadow.colorProperty(), Color.TRANSPARENT)),
-                new KeyFrame(Duration.seconds(1), new KeyValue(innerShadow.colorProperty(), Color.BLUE)) // Colore neon
+                new KeyFrame(Duration.seconds(1), new KeyValue(innerShadow.colorProperty(), Color.BLUE)) // Neon color
         );
         timeline.play();
     }
@@ -356,17 +385,17 @@ public class RouletteGameApp extends Application {
 
         if (innerShadow == null) {
             innerShadow = new InnerShadow();
-            innerShadow.setColor(Color.BLUE); // Imposta il colore iniziale
+            innerShadow.setColor(Color.BLUE); // Set the starting color
             textArea.setEffect(innerShadow);
         }
 
-        // Animazione per far scomparire l'effetto neon
+        // Animation to make the neon effect disappear
         Timeline timeline = new Timeline(
                 new KeyFrame(Duration.ZERO, new KeyValue(innerShadow.colorProperty(), Color.BLUE)),
                 new KeyFrame(Duration.seconds(1), new KeyValue(innerShadow.colorProperty(), Color.TRANSPARENT)));
         timeline.setOnFinished(e -> {
-            textArea.setEffect(null); // Rimuovi l'effetto
-            textArea.setStyle(""); // Ripristina lo stile originale
+            textArea.setEffect(null); // Remove the effect
+            textArea.setStyle(""); // Restore the original style
         });
         timeline.play();
     }
