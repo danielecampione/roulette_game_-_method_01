@@ -260,7 +260,7 @@ public class RouletteGameApp extends Application {
         } else if (isBlack) {
             return 5; // Win in part (black color)
         } else if (isFirstRow) {
-            return 15; // Win in part (first row)
+            return 5; // Win in part (first row)
         } else {
             return -25; // Lose it all
         }
